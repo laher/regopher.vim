@@ -98,7 +98,7 @@ function! s:exit_cb(next, job, exitval) abort
   call call(a:next, [a:job, a:exitval])
 endfunction
 
-function s:parse_errors(exit_val, bang, out, list_type)
+function s:parse_errors(exit_val, bang, out, list_title)
   " reload all files to reflect the new changes. We explicitly call
   " checktime to trigger a reload of all files. See
   " http://www.mail-archive.com/vim@vim.org/msg05900.html for more info
@@ -108,11 +108,11 @@ function s:parse_errors(exit_val, bang, out, list_type)
   silent! checktime
   let &autoread = current_autoread
 
-  let l:listtype = regopher#list#Type(list_type)
+  let l:listtype = regopher#list#Type(list_title)
   if a:exit_val != 0
     call regopher#util#EchoError("FAILED")
     let errors = regopher#tool#ParseErrors(a:out)
-    call regopher#list#Populate(l:listtype, errors, 'Regopher')
+    call regopher#list#Populate(l:listtype, errors, list_title)
     call regopher#list#Window(l:listtype, len(errors))
     if !empty(errors) && !a:bang
       call regopher#list#JumpToFirst(l:listtype)
