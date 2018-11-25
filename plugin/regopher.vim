@@ -40,14 +40,14 @@ endfunction
 call s:checkVersion()
 
 " these packages are used by regopher.vim and can be automatically installed if
-" needed by the user with RegopherInstall.
+" needed by the user with ReGoUpdate.
 let s:packages = {
       \ 'regopher':         ['github.com/laher/regopher'],
 \ }
 
 " These commands are available on any filetypes
-command! -nargs=* -complete=customlist,s:complete RegopherInstall call s:RegopherInstall(-1, <f-args>)
-command! -nargs=* -complete=customlist,s:complete RegopherUpdate  call s:RegopherInstall(1, <f-args>)
+command! -nargs=* -complete=customlist,s:complete ReGoInstall call s:RegopherInstall(-1, <f-args>)
+command! -nargs=* -complete=customlist,s:complete ReGoUpdate  call s:RegopherInstall(1, <f-args>)
 command! -nargs=? -complete=dir GoPath call regopher#path#GoPath(<f-args>)
 
 
@@ -55,8 +55,8 @@ fun! s:complete(lead, cmdline, cursor)
   return filter(keys(s:packages), 'strpart(v:val, 0, len(a:lead)) == a:lead')
 endfun
 
-" RegopherInstall downloads and installs binaries defined in s:packages to
-" $GOBIN or $GOPATH/bin. RegopherInstall will update already installed
+" s:RegopherInstall downloads and installs binaries defined in s:packages to
+" $GOBIN or $GOPATH/bin. s:RegopherInstall will update already installed
 " binaries only if updateBinaries = 1. By default, all packages in s:packages
 " will be installed, but the set can be limited by passing the desired
 " packages in the unnamed arguments.

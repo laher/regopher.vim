@@ -1,5 +1,5 @@
 
-function! regopher#ParamStruct(bang, ...) abort
+function! regopher#ParamsToStruct(bang, ...) abort
   " return with a warning if the bin doesn't exist
   let bin_path = regopher#path#CheckBinPath(regopher#config#RegopherBin())
   if empty(bin_path)
@@ -9,7 +9,7 @@ function! regopher#ParamStruct(bang, ...) abort
   let fname = expand('%:p')
   let pos = regopher#util#OffsetCursor()
   let offset = printf('%s:#%d', fname, pos)
-  let cmd = [bin_path, "-write", "introduce-parameter-object", offset]
+  let cmd = [bin_path, "-write", "params-to-struct", offset]
 
   if regopher#util#has_job()
     call s:params_job({
@@ -23,7 +23,48 @@ function! regopher#ParamStruct(bang, ...) abort
   call s:parse_errors(l:err, a:bang, split(l:out, '\n'))
 endfunction
 
+function! regopher#ResultsToStruct(bang, ...) abort
+  " return with a warning if the bin doesn't exist
+  let bin_path = regopher#path#CheckBinPath(regopher#config#RegopherBin())
+  if empty(bin_path)
+    return
+  endif
+
+  let fname = expand('%:p')
+  let pos = regopher#util#OffsetCursor()
+  let offset = printf('%s:#%d', fname, pos)
+  let cmd = [bin_path, "-write", "results-to-struct", offset]
+
+  if regopher#util#has_job()
+    call s:results_job({
+          \ 'cmd': cmd,
+          \ 'bang': a:bang,
+          \})
+    return
+  endif
+
+  let [l:out, l:err] = regopher#tool#ExecuteInDir(l:cmd)
+  call s:parse_errors(l:err, a:bang, split(l:out, '\n'))
+endfunction
+
 function s:params_job(args)
+  let l:job_opts = {
+        \ 'bang': a:args.bang,
+        \ 'for': 'Regopher',
+        \ 'statustype': 'regopher',
+        \ }
+
+  " autowrite is not enabled for jobs
+  call regopher#cmd#autowrite()
+  let l:cbs = regopher#job#Options(l:job_opts)
+
+  " wrap l:cbs.exit_cb in s:exit_cb.
+  let l:cbs.exit_cb = funcref('s:exit_cb', [l:cbs.exit_cb])
+
+  call regopher#job#Start(a:args.cmd, l:cbs)
+endfunction
+
+function s:results_job(args)
   let l:job_opts = {
         \ 'bang': a:args.bang,
         \ 'for': 'Regopher',

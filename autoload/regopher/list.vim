@@ -133,9 +133,10 @@ endfunction
 " single file or buffer. Keys that begin with an underscore are not supported
 " in g:regopher_list_type_commands.
 let s:default_list_type_commands = {
-      \ "RegopherParamStruct":  "quickfix",
-      \ "_term":                "locationlist",
-      \ "_job":                 "locationlist",
+      \ "ReGoParamsToStruct":  "quickfix",
+      \ "ReGoResultsToStruct": "quickfix",
+      \ "_term":               "locationlist",
+      \ "_job":                "locationlist",
   \ }
 
 function! regopher#list#Type(for) abort
