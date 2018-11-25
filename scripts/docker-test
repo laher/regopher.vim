@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# Run all tests inside a Docker container
+#
+
+set -euC
+mydir=$(cd -P "$(dirname "$0")/.." > /dev/null && pwd)
+cd "$mydir"
+
+docker build --tag regopher-test .
+docker run --rm regopher-test
+
+# vim:ts=2:sts=2:sw=2:et
