@@ -20,7 +20,7 @@ function! regopher#ParamsToStruct(bang, ...) abort
   endif
 
   let [l:out, l:err] = regopher#tool#ExecuteInDir(l:cmd)
-  call s:parse_errors(l:err, a:bang, split(l:out, '\n'))
+  call s:parse_errors(l:err, a:bang, split(l:out, '\n'), "ReGoParamsToStruct")
 endfunction
 
 function! regopher#ResultsToStruct(bang, ...) abort
@@ -44,7 +44,7 @@ function! regopher#ResultsToStruct(bang, ...) abort
   endif
 
   let [l:out, l:err] = regopher#tool#ExecuteInDir(l:cmd)
-  call s:parse_errors(l:err, a:bang, split(l:out, '\n'))
+  call s:parse_errors(l:err, a:bang, split(l:out, '\n'), "ReGoResultsToStruct")
 endfunction
 
 function s:params_job(args)
@@ -98,7 +98,7 @@ function! s:exit_cb(next, job, exitval) abort
   call call(a:next, [a:job, a:exitval])
 endfunction
 
-function s:parse_errors(exit_val, bang, out)
+function s:parse_errors(exit_val, bang, out, list_type)
   " reload all files to reflect the new changes. We explicitly call
   " checktime to trigger a reload of all files. See
   " http://www.mail-archive.com/vim@vim.org/msg05900.html for more info
@@ -108,7 +108,7 @@ function s:parse_errors(exit_val, bang, out)
   silent! checktime
   let &autoread = current_autoread
 
-  let l:listtype = regopher#list#Type("Regopher")
+  let l:listtype = regopher#list#Type(list_type)
   if a:exit_val != 0
     call regopher#util#EchoError("FAILED")
     let errors = regopher#tool#ParseErrors(a:out)
